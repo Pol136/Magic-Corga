@@ -5,7 +5,6 @@ public class SaveMusicSettings : MonoBehaviour
 {
     private AudioManager _audioManager;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _audioManager = AudioManager.Instance;
@@ -33,6 +32,15 @@ public class SaveMusicSettings : MonoBehaviour
 
         _audioManager.MusicVolume(data.musicValue);
         _audioManager.SFXVolume(data.sfxValue);
+
+        //if (SliderController.Instance != null)
+        //{
+        //    SliderController.Instance.CheckSliderValue();
+        //}
+        //else
+        //{
+        //    Debug.Log("Cant do slider control");
+        //}
     }
 
 }

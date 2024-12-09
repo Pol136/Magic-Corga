@@ -4,6 +4,8 @@ using System.Collections;
 public class DrawManager : MonoBehaviour
 {
     private Camera _cam;
+    public Camera screenCamera;
+    public SaveDeleteDrawing takeScreen;
     [SerializeField] private Line _linePrefab;
     private Line _currentLine;
     public const float RESOLUTION = 0.01f;
@@ -28,7 +30,8 @@ public class DrawManager : MonoBehaviour
         }
         else if (Input.GetMouseButtonUp(0) && _currentLine != null)
         {
-            AudioManager.Instance.PlaySFX("YouDrow");
+            //AudioManager.Instance.PlaySFX("YouDrow");
+            takeScreen.SaveCameraView(screenCamera);
             StartCoroutine(FadeOutLine(_currentLine));
             _currentLine = null;
         }

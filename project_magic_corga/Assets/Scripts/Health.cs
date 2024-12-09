@@ -3,7 +3,7 @@ using UnityEngine.UI;
 
 public class Health : MonoBehaviour
 {
-    public static Health Instance;
+    [SerializeField] private WinOrLoose wol;
 
     public int health;
     public int maxHealth;
@@ -47,11 +47,11 @@ public class Health : MonoBehaviour
 
     public void TakeDamage()
     {
-        health -= 1;
-        if (health <= 0)
-        {
-            Debug.Log("You dead");
-        }
+        this.health -= 1;
         CheckHearts();
+        if (this.health <= 0)
+        {
+            wol.LooseGame();
+        }
     }
 }

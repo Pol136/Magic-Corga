@@ -1,0 +1,48 @@
+{
+  "0": [
+    {
+      "health": "4",
+      "speed": 1,
+      "portal": 0
+    },
+    {
+      "health": "5",
+      "speed": 1,
+      "portal": 2
+    },
+    {
+      "health": "6",
+      "speed": 1,
+      "portal": 3
+    },
+    {
+      "health": "5",
+      "speed": 1,
+      "portal": 1
+    }
+  ],
+  "1": [
+    {
+      "health": "76",
+      "speed": 1,
+      "portal": 0
+    },
+    {
+      "health": "45",
+      "speed": 1,
+      "portal": 3
+    }
+  ],
+  "2": [
+    {
+      "health": "97",
+      "speed": 1,
+      "portal": 1
+    },
+    {
+      "health": "92",
+      "speed": 1,
+      "portal": 2
+    }
+  ]
+}

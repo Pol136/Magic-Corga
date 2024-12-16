@@ -1,11 +1,15 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
+using TMPro;
+using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 
 public class DrawManager : MonoBehaviour
 {
     public Camera _cam;
     public Screenshot screen;
     [SerializeField] private Line _linePrefab;
+    [SerializeField] private TextMeshProUGUI textFroDigit;
     private Line _currentLine;
     public const float RESOLUTION = 0.01f;
     public float fadeTime = 1.2f; // Время выцветания в секундах
@@ -33,9 +37,18 @@ public class DrawManager : MonoBehaviour
         {
             //AudioManager.Instance.PlaySFX("YouDrow");
             string filePath = screen.CaptureLayerScreenshot();
-            Debug.Log(filePath);
+            //Debug.Log(filePath);
             string digit = ImageSender.SendImageAndGetDigitPublic(filePath);
-            Debug.Log(digit);
+            textFroDigit.text = digit;
+
+            GameObject[] taggedObjects = GameObject.FindGameObjectsWithTag("Enemy");
+
+            foreach (GameObject obj in taggedObjects)
+            {
+                obj.GetComponent<Enemy>().CheckUpdateHealth(digit);
+            }
+
+            //Debug.Log(digit);
             StartCoroutine(FadeOutLine(_currentLine));
             _currentLine = null;
         }

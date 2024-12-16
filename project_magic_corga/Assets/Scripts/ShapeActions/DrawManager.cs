@@ -3,9 +3,8 @@ using System.Collections;
 
 public class DrawManager : MonoBehaviour
 {
-    private Camera _cam;
-    public Camera screenCamera;
-    public SaveDeleteDrawing takeScreen;
+    public Camera _cam;
+    public Screenshot screen;
     [SerializeField] private Line _linePrefab;
     private Line _currentLine;
     public const float RESOLUTION = 0.01f;
@@ -13,7 +12,7 @@ public class DrawManager : MonoBehaviour
 
     void Start()
     {
-        _cam = Camera.main;
+        //_cam = Camera.main;
     }
 
     void Update()
@@ -31,7 +30,7 @@ public class DrawManager : MonoBehaviour
         else if (Input.GetMouseButtonUp(0) && _currentLine != null)
         {
             //AudioManager.Instance.PlaySFX("YouDrow");
-            takeScreen.SaveCameraView(screenCamera);
+            screen.CaptureLayerScreenshot();
             StartCoroutine(FadeOutLine(_currentLine));
             _currentLine = null;
         }

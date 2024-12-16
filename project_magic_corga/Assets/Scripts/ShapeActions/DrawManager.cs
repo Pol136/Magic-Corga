@@ -10,6 +10,8 @@ public class DrawManager : MonoBehaviour
     public const float RESOLUTION = 0.01f;
     public float fadeTime = 1.2f; // Время выцветания в секундах
 
+    ImageSender imageSender = new ImageSender();
+
     void Start()
     {
         //_cam = Camera.main;
@@ -30,7 +32,10 @@ public class DrawManager : MonoBehaviour
         else if (Input.GetMouseButtonUp(0) && _currentLine != null)
         {
             //AudioManager.Instance.PlaySFX("YouDrow");
-            screen.CaptureLayerScreenshot();
+            string filePath = screen.CaptureLayerScreenshot();
+            Debug.Log(filePath);
+            string digit = ImageSender.SendImageAndGetDigitPublic(filePath);
+            Debug.Log(digit);
             StartCoroutine(FadeOutLine(_currentLine));
             _currentLine = null;
         }

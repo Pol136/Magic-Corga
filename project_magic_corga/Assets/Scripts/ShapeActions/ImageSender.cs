@@ -1,51 +1,72 @@
-using System.Collections;
-using UnityEngine;
-using UnityEngine.Networking;
-using System.IO;
 using System;
+using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
-public class ImageSender : MonoBehaviour
+public class ImageSender
 {
-    private string serverUrl = "http://localhost:8000/detect"; // Замените на ваш URL
+    private static readonly HttpClient client = new HttpClient();
 
-    public void SendImage(Texture2D image)
+    public static string SendImageAndGetDigit(string imagePath)
     {
-        StartCoroutine(UploadImage(image));
+        try
+        {
+            if (!File.Exists(imagePath))
+            {
+                throw new FileNotFoundException("Image file not found.", imagePath);
+            }
+
+            using (var content = new MultipartFormDataContent())
+            {
+                using (var fileStream = new FileStream(imagePath, FileMode.Open, FileAccess.Read))
+                {
+                    var imageContent = new StreamContent(fileStream);
+                    imageContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+                    content.Add(imageContent, "file", Path.GetFileName(imagePath));
+
+                    var response = client.PostAsync("http://localhost:8000/detect", content).Result;
+                    response.EnsureSuccessStatusCode();
+
+                    var responseString = response.Content.ReadAsStringAsync().Result;
+
+                    try
+                    {
+                        using (JsonDocument document = JsonDocument.Parse(responseString))
+                        {
+                            JsonElement root = document.RootElement;
+                            return root.GetProperty("digit").GetInt32().ToString();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception("Error parsing JSON response: " + ex.Message);
+                    }
+                }
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            throw new Exception("Error sending image: " + ex.Message);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An unexpected error occurred: " + ex.Message);
+        }
     }
 
-    private IEnumerator UploadImage(Texture2D image)
+    public static string SendImageAndGetDigitPublic(string imagePath)
     {
-        byte[] imageBytes = image.EncodeToPNG();
-        WWWForm form = new WWWForm();
-        form.AddBinaryData("file", imageBytes, "image.png");
-
-
-        using (UnityWebRequest www = UnityWebRequest.Post(serverUrl, form))
+        try
         {
-            yield return www.SendWebRequest();
-
-            if (www.result == UnityWebRequest.Result.Success)
-            {
-                Debug.Log("Изображение успешно отправлено!");
-                string responseText = www.downloadHandler.text;
-                Debug.Log("Ответ сервера: " + responseText);
-                try
-                {
-                    // Парсинг JSON ответа
-                    //var responseJson = SimpleJSON.JSON.Parse(responseText);
-                    //int digit = responseJson["digit"].AsInt;
-                    Debug.Log("Распознанная цифра: " + digit);
-                    //Обработка результата
-                }
-                catch (Exception ex)
-                {
-                    Debug.LogError("Ошибка парсинга JSON ответа: " + ex.Message);
-                }
-            }
-            else
-            {
-                Debug.LogError("Ошибка отправки изображения: " + www.error);
-            }
+            return SendImageAndGetDigit(imagePath);
+        }
+        catch (Exception ex)
+        {
+            return $"Error: {ex.Message}";
         }
     }
 }
+
+

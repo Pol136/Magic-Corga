@@ -1,9 +1,10 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from PIL import Image
 import numpy as np
 import tensorflow as tf
 import base64
+import logging
 import io
 
 app = FastAPI()
@@ -49,14 +50,35 @@ def detect_number(image_bytes):
         return None
 
 
+# @app.post("/detect")
+# async def detect(file: UploadFile = File(...)):
+#     try:
+#         contents = await file.read()
+#         predicted_digit = detect_number(contents)
+#         if predicted_digit is not None:
+#             return {"digit": int(predicted_digit)}
+#         else:
+#             return JSONResponse(status_code=400, content={"error": "Ошибка обработки изображения"})
+#     except Exception as e:
+#         return JSONResponse(status_code=500, content={"error": str(e)})
+
 @app.post("/detect")
 async def detect(file: UploadFile = File(...)):
     try:
         contents = await file.read()
-        predicted_digit = detect_number(contents)
+        logging.info(f"Received file: {len(contents)} bytes")
+        try:
+            image = np.frombuffer(contents, dtype=np.uint8)
+            logging.info(f"Image shape: {image.shape}")
+            predicted_digit = detect_number(image)
+        except Exception as img_err:
+            logging.error(f"Image processing error: {img_err}")
+            raise HTTPException(status_code=400, detail="Ошибка обработки изображения")  # Более точный код ошибки
+
         if predicted_digit is not None:
             return {"digit": int(predicted_digit)}
         else:
             return JSONResponse(status_code=400, content={"error": "Ошибка обработки изображения"})
     except Exception as e:
-        return JSONResponse(status_code=500, content={"error": str(e)})
+        logging.exception(f"Internal server error: {e}")  # Логируем исключения с трассировкой
+        raise HTTPException(status_code=500, detail=str(e))  # Более точный код ошибки

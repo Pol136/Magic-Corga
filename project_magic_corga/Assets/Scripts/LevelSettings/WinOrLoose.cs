@@ -12,6 +12,7 @@ public class WinOrLoose : MonoBehaviour
 
     public void LooseGame()
     {
+        Time.timeScale = 0f;
         loosePanle.SetActive(true);
     }
 

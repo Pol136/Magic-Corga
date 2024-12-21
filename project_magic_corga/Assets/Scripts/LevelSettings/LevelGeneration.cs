@@ -51,6 +51,10 @@ public class LevelGeneration : MonoBehaviour
             GenerateWave(currentWave);
             currentWave++;
         }
+        //if (GameObject.FindGameObjectsWithTag("Enemy").Length == 0 && currentWave == levelData.Count)
+        //{
+        //    gameObject.GetComponent<WinOrLoose>().WinGame();
+        //}
     }
 
     private void GenerateWave(int waveNumber)
